@@ -1,77 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Rock Paper Scissors 💖</title>
+<meta charset="UTF-8">
+<title>Rock Paper Scissors 💖</title>
 
-    <style>
-        body {
-            background: linear-gradient(135deg, #ffe4ec, #ffd6e5);
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 40px;
-        }
+<style>
+body {
+    background: linear-gradient(135deg, #ffe4ec, #ffd6e5);
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding-top: 40px;
+}
 
-        h1 {
-            color: #b03060;
-        }
+h1 { color: #b03060; }
+p, h2, h3 { color: #6b2b4a; }
 
-        p, h2, h3 {
-            color: #6b2b4a;
-        }
+button {
+    padding: 12px 22px;
+    margin: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 12px;
+    border: none;
+    background-color: #ff8fb1;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: 0.3s;
+}
 
-        button {
-            padding: 12px 22px;
-            margin: 10px;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 12px;
-            border: none;
-            background-color: #ff8fb1;
-            color: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            transition: 0.3s;
-        }
+button:hover {
+    background-color: #ff6f9c;
+    transform: scale(1.05);
+}
 
-        button:hover {
-            background-color: #ff6f9c;
-            transform: scale(1.05);
-        }
+img {
+    margin-top: 20px;
+    max-width: 300px;
+    border-radius: 15px;
+}
 
-        img {
-            margin-top: 20px;
-            max-width: 300px;
-            border-radius: 15px;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
+.hidden { display: none; }
+</style>
 </head>
 
 <body>
 
 <h1>Rock ✊ Paper ✋ Scissors ✌️</h1>
 
-<!-- GAME SCREEN -->
+<!-- AUDIO -->
+<audio id="winMusic" src="https://www.myinstants.com/media/sounds/careless-whisper-meme.mp3"></audio>
+<audio id="wowSound" src="https://www.myinstants.com/media/sounds/anime-wow-sound-effect.mp3"></audio>
+<audio id="sadSound" src="https://www.myinstants.com/media/sounds/sad-violin.mp3"></audio>
+
+<!-- GAME -->
 <div id="game">
     <p>Choose one:</p>
-    <button onclick="play()">Rock</button>
-    <button onclick="play()">Paper</button>
-    <button onclick="play()">Scissors</button>
+    <button onclick="play('Rock')">Rock</button>
+    <button onclick="play('Paper')">Paper</button>
+    <button onclick="play('Scissors')">Scissors</button>
 </div>
 
-<!-- WIN SCREEN -->
-<div id="winScreen" class="hidden">
-    <h2>🎉 You Win!</h2>
+<!-- RESULT -->
+<div id="result" class="hidden">
+    <h2 id="resultText"></h2>
     <p><b>If you win, you have to go on a date with me 😌💖</b></p>
-    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="Dancing White Cat">
+    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif">
     <br><br>
     <button onclick="askRematch()">Rematch</button>
 </div>
 
-<!-- REMATCH QUESTION -->
+<!-- REMATCH ASK -->
 <div id="rematchAsk" class="hidden">
     <h3>Do you actually wanna rematch? 😔</h3>
     <button onclick="rematchYes()">Yes</button>
@@ -83,74 +81,75 @@
     <h3 id="memeText"></h3>
     <img id="memeGif">
     <br><br>
-    <button onclick="startGame()">Rematch</button>
+    <button onclick="startGame()">Start Again</button>
 </div>
 
 <script>
-    let rematchCount = 0;
+let round = 0;
 
-    const rematchMemes = [
-        {
-            text: "It's God's plan 😌🙏",
-            gif: "https://media.giphy.com/media/3ohzdYJK1wAdPWVk88/giphy.gif"
-        },
-        {
-            text: "You can't escape destiny 😏",
-            gif: "https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif"
-        },
-        {
-            text: "Universe said YES 💫",
-            gif: "https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif"
-        },
-        {
-            text: "This win was scripted 😂",
-            gif: "https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif"
-        },
-        {
-            text: "Okay fine, you win AGAIN 😭",
-            gif: "https://media.giphy.com/media/9Y5BbDSkSTiY8/giphy.gif"
-        },
-        {
-            text: "At this point it's fate 💍",
-            gif: "https://media.giphy.com/media/l4FGuhL4U2WyjdkaY/giphy.gif"
-        }
-    ];
+const winStatements = [
+    "I chose Rock, you win 😌",
+    "I chose Paper, you win again 😭",
+    "I chose Scissors, you win obviously 💫",
+    "This game is rigged, you win 😂",
+    "Okay stop, you're too powerful 😏"
+];
 
-    function play() {
-        document.getElementById("game").classList.add("hidden");
-        document.getElementById("winScreen").classList.remove("hidden");
-    }
+const rematchYesMemes = [
+    { text: "It's God's plan 😌🙏", gif: "https://media.giphy.com/media/3ohzdYJK1wAdPWVk88/giphy.gif" },
+    { text: "Destiny said YES 💖", gif: "https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif" },
+    { text: "You can't escape fate 😏", gif: "https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif" },
+    { text: "Scripted by the universe 😂", gif: "https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif" }
+];
 
-    function askRematch() {
-        document.getElementById("winScreen").classList.add("hidden");
-        document.getElementById("rematchAsk").classList.remove("hidden");
-    }
+function play(choice) {
+    document.getElementById("game").classList.add("hidden");
+    document.getElementById("result").classList.remove("hidden");
 
-    function rematchNo() {
-        document.getElementById("rematchAsk").classList.add("hidden");
-        document.getElementById("memeScreen").classList.remove("hidden");
+    document.getElementById("resultText").innerText =
+        winStatements[round % winStatements.length];
 
-        document.getElementById("memeText").innerText =
-            "Respect 🫶 Smart choice 😌";
-        document.getElementById("memeGif").src =
-            "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif";
-    }
+    // Play WOW + Careless Whisper meme
+    document.getElementById("wowSound").play();
+    setTimeout(() => {
+        document.getElementById("winMusic").play();
+    }, 600);
 
-    function rematchYes() {
-        document.getElementById("rematchAsk").classList.add("hidden");
-        document.getElementById("memeScreen").classList.remove("hidden");
+    round++;
+}
 
-        let meme = rematchMemes[rematchCount % rematchMemes.length];
-        rematchCount++;
+function askRematch() {
+    document.getElementById("result").classList.add("hidden");
+    document.getElementById("rematchAsk").classList.remove("hidden");
+}
 
-        document.getElementById("memeText").innerText = meme.text;
-        document.getElementById("memeGif").src = meme.gif;
-    }
+function rematchNo() {
+    document.getElementById("sadSound").play();
 
-    function startGame() {
-        document.getElementById("memeScreen").classList.add("hidden");
-        document.getElementById("game").classList.remove("hidden");
-    }
+    document.getElementById("rematchAsk").classList.add("hidden");
+    document.getElementById("memeScreen").classList.remove("hidden");
+
+    document.getElementById("memeText").innerText =
+        "Respect 😌 You chose peace";
+    document.getElementById("memeGif").src =
+        "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif";
+}
+
+function rematchYes() {
+    document.getElementById("wowSound").play();
+
+    document.getElementById("rematchAsk").classList.add("hidden");
+    document.getElementById("memeScreen").classList.remove("hidden");
+
+    let meme = rematchYesMemes[round % rematchYesMemes.length];
+    document.getElementById("memeText").innerText = meme.text;
+    document.getElementById("memeGif").src = meme.gif;
+}
+
+function startGame() {
+    document.getElementById("memeScreen").classList.add("hidden");
+    document.getElementById("game").classList.remove("hidden");
+}
 </script>
 
 </body>
