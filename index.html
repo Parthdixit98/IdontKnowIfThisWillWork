@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flappy Bird</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #70c5ce;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            background-color: #70c5ce;
+            display: block;
+            margin: auto;
+            border: 2px solid black;
+        }
+
+        h1 {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Flappy Bird 🐦</h1>
+<p>Press SPACE to fly</p>
+
+<canvas id="gameCanvas" width="400" height="500"></canvas>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let birdY = 250;
+    let birdVelocity = 0;
+    let gravity = 0.5;
+    let jump = -8;
+
+    let pipeX = 400;
+    let pipeWidth = 50;
+    let gap = 150;
+    let pipeTopHeight = Math.random() * 200 + 50;
+
+    let score = 0;
+    let gameOver = false;
+
+    document.addEventListener("keydown", function (event) {
+        if (event.code === "Space" && !gameOver) {
+            birdVelocity = jump;
+        }
+        if (event.code === "Enter" && gameOver) {
+            location.reload();
+        }
+    });
+
+    function drawBird() {
+        ctx.fillStyle = "yellow";
+        ctx.beginPath();
+        ctx.arc(100, birdY, 15, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function drawPipes() {
+        ctx.fillStyle = "green";
+        ctx.fillRect(pipeX, 0, pipeWidth, pipeTopHeight);
+        ctx.fillRect(pipeX, pipeTopHeight + gap, pipeWidth, canvas.height);
+    }
+
+    function updatePipes() {
+        pipeX -= 2;
+
+        if (pipeX + pipeWidth < 0) {
+            pipeX = 400;
+            pipeTopHeight = Math.random() * 200 + 50;
+            score++;
+        }
+    }
+
+    function checkCollision() {
+        if (
+            birdY - 15 < 0 ||
+            birdY + 15 > canvas.height ||
+            (100 + 15 > pipeX &&
+                100 - 15 < pipeX + pipeWidth &&
+                (birdY - 15 < pipeTopHeight ||
+                 birdY + 15 > pipeTopHeight + gap))
+        ) {
+            gameOver = true;
+        }
+    }
+
+    function drawScore() {
+        ctx.fillStyle = "black";
+        ctx.font = "20px Arial";
+        ctx.fillText("Score: " + score, 10, 30);
+    }
+
+    function drawGameOver() {
+        ctx.fillStyle = "red";
+        ctx.font = "30px Arial";
+        ctx.fillText("Game Over", 110, 250);
+        ctx.font = "16px Arial";
+        ctx.fillText("Press ENTER to Restart", 100, 280);
+    }
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (!gameOver) {
+            birdVelocity += gravity;
+            birdY += birdVelocity;
+
+            drawBird();
+            drawPipes();
+            updatePipes();
+            checkCollision();
+            drawScore();
+        } else {
+            drawBird();
+            drawPipes();
+            drawGameOver();
+        }
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+</script>
+
+</body>
+</html>
